@@ -39,11 +39,11 @@ $gmailButton.onclick = () => {
 };
 
 //HW_2
-const $parentBlock = document.querySelector('.parent_block');
+const $parentBlockWidth = document.querySelector('.parent_block').clientWidth; // вернёт длину (width) родительского квадратика
 const $childBlock = document.querySelector('.child_block');
 
 const moveBlock = (num) => {
-    if(num <= 448) {
+    if(num <= $parentBlockWidth - $childBlock.clientWidth) {
         $childBlock.style.left = `${num}px`
         requestAnimationFrame(() => moveBlock(num + 1));
     } else {    
