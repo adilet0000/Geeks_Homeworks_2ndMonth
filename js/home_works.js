@@ -52,3 +52,9 @@ const moveBlock = (num) => {
     };
 };
 moveBlock(1);
+
+
+
+
+
+// фиксануть баг с быстрым нажатием start
