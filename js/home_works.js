@@ -39,22 +39,23 @@ $gmailButton.onclick = () => {
 };
 
 //HW_2
-const $parentBlockWidth = document.querySelector('.parent_block').clientWidth; // вернёт длину (width) родительского квадратика
+const $parentBlockWidth = document.querySelector('.parent_block').clientWidth; // вернёт длину (width) родительского квадратика, которую видит пользователь, а родная ширина offsetWidth
+const $parentBlockHeight = document.querySelector('.parent_block').clientHeight; // вернёт длину (width) родительского квадратика, которую видит пользователь, а родная ширина offsetHeight
 const $childBlock = document.querySelector('.child_block');
 
-const moveBlock = (num) => {
+const moveBlock = (num, num2) => {
     if(num <= $parentBlockWidth - $childBlock.clientWidth) {
-        $childBlock.style.left = `${num}px`
-        requestAnimationFrame(() => moveBlock(num + 1));
-    } else {    
-        console.log("done");
-        return "done";
-    };
+        $childBlock.style.left = `${num}px`;
+        requestAnimationFrame(() => moveBlock(num + 3, num2));
+    } else if (num > $parentBlockWidth - $childBlock.clientWidth && num2 <= $parentBlockHeight - $childBlock.clientHeight) {
+        $childBlock.style.top = `${num2}px`;
+        requestAnimationFrame(() => moveBlock(num, num2 + 3));
+    }
 };
-moveBlock(1);
+moveBlock(1, 1);
 
 
 
 
 
-// фиксануть баг с быстрым нажатием start
+// фиксануть баг с быстрым нажатием start и сделать фулл квадрат полностью бесконечно
