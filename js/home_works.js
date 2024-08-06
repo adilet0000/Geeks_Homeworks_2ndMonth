@@ -29,7 +29,7 @@ const regExp = /^(?!.*\.{2,})[a-zA-Z\d][a-zA-Z\d\.]{4,28}[a-zA-Z\d]@(gmail\.com|
 // .* - означает "ноль или более любых символов
 
 $gmailButton.onclick = () => {
-    if(regExp.test($gmailInput.value)) {
+    if (regExp.test($gmailInput.value)) {
         $gmailSpan.innerHTML = "Success";
         $gmailSpan.style.color = "green";
     } else {
@@ -39,23 +39,56 @@ $gmailButton.onclick = () => {
 };
 
 //HW_2
-const $parentBlockWidth = document.querySelector('.parent_block').clientWidth; // вернёт длину (width) родительского квадратика, которую видит пользователь, а родная ширина offsetWidth
-const $parentBlockHeight = document.querySelector('.parent_block').clientHeight; // вернёт длину (width) родительского квадратика, которую видит пользователь, а родная ширина offsetHeight
+const $parentBlockWidth = document.querySelector('.parent_block').offsetWidth; // clietntWidth вернёт длину (width) родительского квадратика, которую видит пользователь, а родная длинa offsetWidth
+const $parentBlockHeight = document.querySelector('.parent_block').offsetHeight;
 const $childBlock = document.querySelector('.child_block');
 
-const moveBlock = (num, num2) => {
-    if(num <= $parentBlockWidth - $childBlock.clientWidth) {
-        $childBlock.style.left = `${num}px`;
-        requestAnimationFrame(() => moveBlock(num + 3, num2));
-    } else if (num > $parentBlockWidth - $childBlock.clientWidth && num2 <= $parentBlockHeight - $childBlock.clientHeight) {
-        $childBlock.style.top = `${num2}px`;
-        requestAnimationFrame(() => moveBlock(num, num2 + 3));
+const moveBlock = (x = 0, y = 0) => {
+    if (x <= $parentBlockWidth - $childBlock.clientWidth - 2 && y === 0) {
+        $childBlock.style.left = `${x}px`;
+        requestAnimationFrame(() => moveBlock(x + 2, y));
+    } else if (x > $parentBlockWidth - $childBlock.clientWidth - 2 && y <= $parentBlockHeight - $childBlock.clientHeight - 2) {
+        $childBlock.style.top = `${y}px`;
+        requestAnimationFrame(() => moveBlock(x, y + 2));
+    } else if (x >= 0 && y > $parentBlockHeight - $childBlock.clientHeight - 2) {
+        $childBlock.style.left = `${x}px`;
+        requestAnimationFrame(() => moveBlock(x - 2, y));
+    } else if (x < 0 && y >= 0) {
+        $childBlock.style.top = `${y}px`;
+        requestAnimationFrame(() => moveBlock(x, y - 2));
     }
 };
-moveBlock(1, 1);
+moveBlock();
 
 
 
 
+// HW_3
+const start_btn = document.querySelector('#start');
+const stop_btn = document.querySelector('#stop');
+const reset_btn = document.querySelector('#reset');
 
-// фиксануть баг с быстрым нажатием start и сделать фулл квадрат полностью бесконечно
+let timer = document.querySelector('#seconds');
+
+let num = 0;
+let interval = null;
+
+start_btn.addEventListener('click', () => {
+    if(!interval) {
+        interval = setInterval(() => {
+            timer.textContent = num++;
+        }, 1000);
+    };
+});
+
+stop_btn.addEventListener('click', () => {
+    clearInterval(interval, 0);
+    interval = null;
+});
+
+reset_btn.addEventListener('click', () => {
+    clearInterval(interval, 0);
+    interval = null;
+    num = 0; 
+    timer.textContent = num; 
+});
