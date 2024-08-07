@@ -39,26 +39,26 @@ $gmailButton.onclick = () => {
 };
 
 //HW_2
-const $parentBlockWidth = document.querySelector('.parent_block').offsetWidth; // clietntWidth вернёт длину (width) родительского квадратика, которую видит пользователь, а родная длинa offsetWidth
-const $parentBlockHeight = document.querySelector('.parent_block').offsetHeight;
+// clietntWidth вернёт длину (width) родительского квадратика, которую видит пользователь, а родная длинa offsetWidth, то же и с height
+const $parentBlock = document.querySelector('.parent_block');
 const $childBlock = document.querySelector('.child_block');
 
-const moveBlock = (x = 0, y = 0) => {
-    if (x <= $parentBlockWidth - $childBlock.clientWidth - 2 && y === 0) {
-        $childBlock.style.left = `${x}px`;
-        requestAnimationFrame(() => moveBlock(x + 2, y));
-    } else if (x > $parentBlockWidth - $childBlock.clientWidth - 2 && y <= $parentBlockHeight - $childBlock.clientHeight - 2) {
-        $childBlock.style.top = `${y}px`;
-        requestAnimationFrame(() => moveBlock(x, y + 2));
-    } else if (x >= 0 && y > $parentBlockHeight - $childBlock.clientHeight - 2) {
-        $childBlock.style.left = `${x}px`;
-        requestAnimationFrame(() => moveBlock(x - 2, y));
-    } else if (x < 0 && y >= 0) {
-        $childBlock.style.top = `${y}px`;
-        requestAnimationFrame(() => moveBlock(x, y - 2));
-    }
+let positionX = 0;
+let positionY = 0;
+const $offsetWidth = $parentBlock.offsetWidth - $childBlock.offsetWidth;
+const $offsetHeight = $parentBlock.offsetHeight - $childBlock.offsetHeight;
+
+const moveBlock = () => {
+    requestAnimationFrame(moveBlock);
+    $childBlock.style.left = `${positionX}px`;
+    $childBlock.style.top = `${positionY}px`;
+
+    if (positionX < $offsetWidth && positionY === 0) positionX+=5
+    else if (positionX >= $offsetWidth && positionY < $offsetHeight) positionY+=15
+    else if (positionX > 0 && positionY > 0) positionX-=5
+    else if (positionX === 0 && positionY > 0) positionY-=15
 };
-moveBlock();
+moveBlock(); // запись стрима 3-го урока 
 
 
 
@@ -74,7 +74,7 @@ let num = 0;
 let interval = null;
 
 start_btn.addEventListener('click', () => {
-    if(!interval) {
+    if (!interval) {
         interval = setInterval(() => {
             timer.textContent = num++;
         }, 1000);
@@ -89,6 +89,6 @@ stop_btn.addEventListener('click', () => {
 reset_btn.addEventListener('click', () => {
     clearInterval(interval, 0);
     interval = null;
-    num = 0; 
-    timer.textContent = num; 
+    num = 0;
+    timer.textContent = num;
 });
