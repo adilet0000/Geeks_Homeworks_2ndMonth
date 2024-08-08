@@ -44,11 +44,35 @@ showTabContent();
 tabParent.onclick = (event) => {
     if (event.target.classList.contains('tab_content_item')) {
         tabItems.forEach((item, index) => {
-            if(event.target === item) {
-                hideTabContent();
-                showTabContent(index);
+            if (event.target === item) {
+                manualSwitch(index);
             };
         });
     };
 };
-// 1. lesson js, bug na перепрыгивание. 2 modaljs addeventlistenerscroll
+
+// HW
+let currentIndex = 0;
+let autoNextTimeout = null;
+
+const manualSwitch = (i) => {
+    clearTimeout(autoNextTimeout);
+    showTab(i);
+    autoNext();
+};
+
+const showTab = (i) => {
+    currentIndex = i;
+    hideTabContent();
+    showTabContent(i);
+};
+
+const autoNext = () => {
+    autoNextTimeout = setTimeout(() => {
+        currentIndex = (currentIndex + 1) % 5; // Остаток от деления на 5 = 0, типо если 4+1=5
+        showTab(currentIndex);
+        autoNext();
+    }, 7500);
+};
+
+autoNext()
