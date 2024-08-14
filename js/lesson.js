@@ -76,3 +76,52 @@ const autoNext = () => {
 };
 
 autoNext()
+
+// CONVERTER - понять как обновлять json по курсу с помощью API
+const $usdInput = document.querySelector('#usd');
+const $somInput = document.querySelector('#som');
+
+/* $somInput.addEventListener('input', () => {
+    просто не забыть что так можно
+}); */
+
+// В одну сторону
+// $somInput.oninput = () => { // срабатывает при любом изменении поля input
+//     const request = new XMLHttpRequest();
+//     request.open('GET', '../data/converter.json');
+//     request.setRequestHeader('Content-type', 'application/json');
+//     request.send();
+
+//     request.onload = () => {
+//         const data = JSON.parse(request.response);
+//         // console.log(request.response);
+//         $usdInput.value = ($somInput.value / data.usd).toFixed(3); // toFixed округлят до значения в скобках после запятой
+//     }
+// }
+
+// В обе стороны
+const converter = (element, targetElement) => {
+    element.oninput = () => {
+        const request = new XMLHttpRequest();
+        request.open('GET', '../data/converter.json');
+        request.setRequestHeader('Content-type', 'application/json');
+        request.send();
+
+        request.onload = () => {
+            const data = JSON.parse(request.response);
+            if(element.id === 'som') { // проверка в каком input печатают
+                targetElement.value = (element.value / data.usd).toFixed(3);
+            } else if (element.id === 'usd') { // проверка в каком input печатают
+                targetElement.value = (element.value * data.usd).toFixed(3);
+            } /* else if (element.value === '') {
+                targetElement.value = '';
+            };
+            element.value === '' ? targetElement.value === '' : '' */
+            element.value === '' && (targetElement.value = ''); // если левая часть true то сработает то что в скобках иначе - нет
+        };
+    };
+};
+converter($somInput, $usdInput); // чтобы не юзать двойной вызов можно использовать массив
+converter($usdInput, $somInput);
+
+// KISS - keep it simple, stupid! - Делай проще / DRY / почитать про BEM и SOLID
