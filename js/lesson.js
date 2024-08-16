@@ -77,9 +77,15 @@ const autoNext = () => {
 
 autoNext()
 
-// CONVERTER - понять как обновлять json по курсу с помощью API
-const $usdInput = document.querySelector('#usd');
+// CONVERTER
 const $somInput = document.querySelector('#som');
+const $kztInput = document.querySelector('#kzt');
+const $rubInput = document.querySelector('#rub');
+const $usdInput = document.querySelector('#usd');
+const $eurInput = document.querySelector('#eur');
+const $gbpInput = document.querySelector('#gbp');
+
+const inputs = [$somInput, $kztInput, $rubInput, $usdInput, $eurInput, $gbpInput];
 
 /* $somInput.addEventListener('input', () => {
     просто не забыть что так можно
@@ -93,11 +99,13 @@ const $somInput = document.querySelector('#som');
 //     request.send();
 
 //     request.onload = () => {
-//         const data = JSON.parse(request.response);
-//         // console.log(request.response);
+//         const data = JSON.parse(request.result);
+//         // console.log(request.result);
 //         $usdInput.value = ($somInput.value / data.usd).toFixed(3); // toFixed округлят до значения в скобках после запятой
 //     }
 // }
+
+/*
 
 // В обе стороны
 const converter = (element, targetElement) => {
@@ -108,15 +116,12 @@ const converter = (element, targetElement) => {
         request.send();
 
         request.onload = () => {
-            const data = JSON.parse(request.response);
-            if(element.id === 'som') { // проверка в каком input печатают
+            const data = JSON.parse(request.result);
+            if (element.id === 'som') { // проверка в каком input печатают
                 targetElement.value = (element.value / data.usd).toFixed(3);
             } else if (element.id === 'usd') { // проверка в каком input печатают
                 targetElement.value = (element.value * data.usd).toFixed(3);
-            } /* else if (element.value === '') {
-                targetElement.value = '';
-            };
-            element.value === '' ? targetElement.value === '' : '' */
+            }
             element.value === '' && (targetElement.value = ''); // если левая часть true то сработает то что в скобках иначе - нет
         };
     };
@@ -125,3 +130,65 @@ converter($somInput, $usdInput); // чтобы не юзать двойной в
 converter($usdInput, $somInput);
 
 // KISS - keep it simple, stupid! - Делай проще / DRY / почитать про BEM и SOLID
+
+*/
+
+
+// юзаем API по уроку "Конвертер валют на JavaScript. Полный урок. Актуальные курсы"
+
+// https://data.fx.kg/api/v1/central - курс по Центральному Банку
+// 9fAIn2lklRcQOOUl8wBLrQ6NVFYbMyWAlhTh8Uqb868ed5c1 - KGS - токен
+
+const rates = {};
+
+
+const token = "9fAIn2lklRcQOOUl8wBLrQ6NVFYbMyWAlhTh8Uqb868ed5c1"
+
+async function getCurrencies() {
+    const response = await fetch('https://data.fx.kg/api/v1/central', {
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    });
+    const data = await response.json();
+    const result = await data;
+
+    rates.USD = result.usd;
+    rates.EUR = result.eur;
+    rates.GBP = result.gbp;
+    rates.RUB = result.rub;
+    rates.KZT = result.kzt;
+    rates.SOM = 1;
+
+    return rates;
+};
+
+
+getCurrencies().then(() => { // После завершения getCurrencies запустится
+    function convertCurrency(inputElement, value) {
+        const currency = inputElement.getAttribute('id').toUpperCase();
+        const somValue = value * rates[currency];  // Переводим в сомы
+        
+        inputs.forEach(input => {
+            const targetCurrency = input.getAttribute('id').toUpperCase();
+            
+            if (targetCurrency !== currency) {
+                input.value = (somValue / rates[targetCurrency]).toFixed(3);  // Переводим обратно в нужные валюты
+            }
+        });
+    }
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', (event) => {
+            const value = parseFloat(event.target.value);
+            if (!isNaN(value)) {
+                convertCurrency(event.target, value);
+            }
+        });
+    });
+});
+
+/*getCurrencies().then((data) => {
+    console.log('Данные курсов валют:', data);
+    console.log('Объект rates:', rates);
+});проверка*/
