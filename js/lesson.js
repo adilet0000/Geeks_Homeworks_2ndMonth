@@ -164,27 +164,28 @@ async function getCurrencies() {
 };
 
 
-getCurrencies().then(() => { // После завершения getCurrencies запустится
+getCurrencies().then(() => {
     function convertCurrency(inputElement, value) {
         const currency = inputElement.getAttribute('id').toUpperCase();
-        const somValue = value * rates[currency];  // Переводим в сомы
 
-        if (inputElement.value !== '') {
+        if (inputElement.value === '') {
             inputs.forEach(input => {
-                const targetCurrency = input.getAttribute('id').toUpperCase();
-
-                if (targetCurrency !== currency) {
-                    input.value = (somValue / rates[targetCurrency]).toFixed(3);  // Переводим обратно в нужные валюты
-                };
-            });
-
-        } else { // Дописать чтобы при пустой строке было пусто во всех строках!
-            inputs.forEach(input => {
-                if (targetCurrency !== currency) {
+                if (input !== inputElement) {
                     input.value = '';
                 };
             });
+            return;
         };
+
+        const somValue = value * rates[currency];
+
+        inputs.forEach(input => {
+            const targetCurrency = input.getAttribute('id').toUpperCase();
+
+            if (targetCurrency !== currency) {
+                input.value = (somValue / rates[targetCurrency]).toFixed(3);
+            };
+        });
     };
 
     inputs.forEach(input => {
@@ -192,6 +193,10 @@ getCurrencies().then(() => { // После завершения getCurrencies з
             const value = parseFloat(event.target.value);
             if (!isNaN(value)) {
                 convertCurrency(event.target, value);
+            } else {
+                inputs.forEach(input => {
+                    input.value = '';
+                });
             };
         });
     });
