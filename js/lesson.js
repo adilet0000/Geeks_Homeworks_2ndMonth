@@ -168,22 +168,31 @@ getCurrencies().then(() => { // После завершения getCurrencies з
     function convertCurrency(inputElement, value) {
         const currency = inputElement.getAttribute('id').toUpperCase();
         const somValue = value * rates[currency];  // Переводим в сомы
-        
-        inputs.forEach(input => {
-            const targetCurrency = input.getAttribute('id').toUpperCase();
-            
-            if (targetCurrency !== currency) {
-                input.value = (somValue / rates[targetCurrency]).toFixed(3);  // Переводим обратно в нужные валюты
-            }
-        });
-    }
-    
+
+        if (inputElement.value !== '') {
+            inputs.forEach(input => {
+                const targetCurrency = input.getAttribute('id').toUpperCase();
+
+                if (targetCurrency !== currency) {
+                    input.value = (somValue / rates[targetCurrency]).toFixed(3);  // Переводим обратно в нужные валюты
+                };
+            });
+
+        } else { // Дописать чтобы при пустой строке было пусто во всех строках!
+            inputs.forEach(input => {
+                if (targetCurrency !== currency) {
+                    input.value = '';
+                };
+            });
+        };
+    };
+
     inputs.forEach(input => {
         input.addEventListener('input', (event) => {
             const value = parseFloat(event.target.value);
             if (!isNaN(value)) {
                 convertCurrency(event.target, value);
-            }
+            };
         });
     });
 });
@@ -192,3 +201,28 @@ getCurrencies().then(() => { // После завершения getCurrencies з
     console.log('Данные курсов валют:', data);
     console.log('Объект rates:', rates);
 });проверка*/
+
+
+// CARD-SWITCHER
+const $cardBlock = document.querySelector('.card');
+const $btn_next = document.querySelector('#btn-next');
+const $btn_prev = document.querySelector('#btn-prev');
+let cardId = 0;
+
+$btn_next.onclick = () => {
+    cardId++;
+    fetch(`https://jsonplaceholder.typicode.com/todos/${cardId}`)
+        .then(response => response.json())
+        .then(data => {
+            $cardBlock.innerHTML = `
+            <p>${data.title}</p>
+            <p style="color: ${data.completed ? 'green' : 'red'}">${data.completed}</p>
+            <span>${data.id}</span>
+            `;
+        });
+};
+
+$btn_prev.onclick = () => {
+
+}
+// при обновлении чтобы в карточке по умолчанию стоял 1-й элемент, и без undefined
