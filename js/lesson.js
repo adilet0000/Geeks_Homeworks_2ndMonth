@@ -203,14 +203,14 @@ getCurrencies().then(() => { // После завершения getCurrencies з
 });проверка*/
 
 
+
 // CARD-SWITCHER
 const $cardBlock = document.querySelector('.card');
 const $btn_next = document.querySelector('#btn-next');
 const $btn_prev = document.querySelector('#btn-prev');
-let cardId = 0;
+let cardId = 1;
 
-$btn_next.onclick = () => {
-    cardId++;
+const getInfo = () => {
     fetch(`https://jsonplaceholder.typicode.com/todos/${cardId}`)
         .then(response => response.json())
         .then(data => {
@@ -222,7 +222,33 @@ $btn_next.onclick = () => {
         });
 };
 
-$btn_prev.onclick = () => {
+getInfo();
 
-}
-// при обновлении чтобы в карточке по умолчанию стоял 1-й элемент, и без undefined
+
+$btn_next.onclick = () => {
+    // cardId = (cardId >= 1 && cardId < 200) ? cardId + 1 : 1;
+    if (cardId >= 1 && cardId < 200) {
+        cardId++;
+    } else if (cardId >= 200) {
+        cardId = 1;
+    };
+
+    getInfo();
+};
+
+$btn_prev.onclick = () => {
+    // cardId = (cardId > 1 && cardId <= 200) ? cardId - 1 : 200;
+    if (cardId > 1 && cardId <= 200) {
+        cardId--;
+    } else if (cardId <= 1) {
+        cardId = 200;
+    };
+
+    getInfo();
+};
+
+
+// HW_PART_2 Так же сделать отдельный fetch запрос на эту ссылку: 'https://jsonplaceholder.typicode.com/posts' и отобразить данные просто в консоли
+fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(data => console.log(data));
