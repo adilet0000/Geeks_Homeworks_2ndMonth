@@ -163,7 +163,7 @@ async function getCurrencies() {
     return rates;
 };
 
-
+/*
 getCurrencies().then(() => {
     function convertCurrency(inputElement, value) {
         const currency = inputElement.getAttribute('id').toUpperCase();
@@ -200,60 +200,96 @@ getCurrencies().then(() => {
             };
         });
     });
-});
-
-/*getCurrencies().then((data) => {
-    console.log('Данные курсов валют:', data);
-    console.log('Объект rates:', rates);
-});проверка*/
+// });
+*/
+// getCurrencies().then((data) => {
+//     console.log('Данные курсов валют:', data);
+//     console.log('Объект rates:', rates);
+// });
 
 
 
 // CARD-SWITCHER
-const $cardBlock = document.querySelector('.card');
-const $btn_next = document.querySelector('#btn-next');
-const $btn_prev = document.querySelector('#btn-prev');
-let cardId = 1;
+// const $cardBlock = document.querySelector('.card');
+// const $btn_next = document.querySelector('#btn-next');
+// const $btn_prev = document.querySelector('#btn-prev');
+// let cardId = 1;
 
-const getInfo = () => {
-    fetch(`https://jsonplaceholder.typicode.com/todos/${cardId}`)
-        .then(response => response.json())
-        .then(data => {
-            $cardBlock.innerHTML = `
-            <p>${data.title}</p>
-            <p style="color: ${data.completed ? 'green' : 'red'}">${data.completed}</p>
-            <span>${data.id}</span>
-            `;
-        });
-};
+// const getInfo = () => {
+//     fetch(`https://jsonplaceholder.typicode.com/todos/${cardId}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             $cardBlock.innerHTML = `
+//             <p>${data.title}</p>
+//             <p style="color: ${data.completed ? 'green' : 'red'}">${data.completed}</p>
+//             <span>${data.id}</span>
+//             `;
+//         });
+// };
 
-getInfo();
+// getInfo();
 
 
-$btn_next.onclick = () => {
-    // cardId = (cardId >= 1 && cardId < 200) ? cardId + 1 : 1;
-    if (cardId >= 1 && cardId < 200) {
-        cardId++;
-    } else if (cardId >= 200) {
-        cardId = 1;
-    };
+// $btn_next.onclick = () => {
+//     // cardId = (cardId >= 1 && cardId < 200) ? cardId + 1 : 1;
+//     if (cardId >= 1 && cardId < 200) {
+//         cardId++;
+//     } else if (cardId >= 200) {
+//         cardId = 1;
+//     };
 
-    getInfo();
-};
+//     getInfo();
+// };
 
-$btn_prev.onclick = () => {
-    // cardId = (cardId > 1 && cardId <= 200) ? cardId - 1 : 200;
-    if (cardId > 1 && cardId <= 200) {
-        cardId--;
-    } else if (cardId <= 1) {
-        cardId = 200;
-    };
+// $btn_prev.onclick = () => {
+//     // cardId = (cardId > 1 && cardId <= 200) ? cardId - 1 : 200;
+//     if (cardId > 1 && cardId <= 200) {
+//         cardId--;
+//     } else if (cardId <= 1) {
+//         cardId = 200;
+//     };
 
-    getInfo();
-};
+//     getInfo();
+// };
 
 
 // HW_PART_2 Так же сделать отдельный fetch запрос на эту ссылку: 'https://jsonplaceholder.typicode.com/posts' и отобразить данные просто в консоли
 fetch('https://jsonplaceholder.typicode.com/posts')
     .then(response => response.json())
     .then(data => console.log(data));
+
+
+// WEATHER
+const $citySearchInput = document.querySelector('.cityName');
+// const $searchBtn = document.querySelector('#search');
+const $cityName = document.querySelector('.city');
+const $cityTemp = document.querySelector('.temp');
+
+const API_KEY = 'e417df62e04d3b1b111abeab19cea714';
+const API_URL = 'http://api.openweathermap.org/data/2.5/weather';
+
+// query params - параметры запроса
+// https://www.google.com/search query parametr-->(?q=) js&oq=js&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORiABDIGCAEQIxgnMgYIAhAjGCcyDAgDEAAYQxiABBiKBTIMCAQQABhDGIAEGIoFMgYIBRBFGDwyBggGEEUYPDIGCAcQRRg80gEHOTg3ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+// t °С = 5/9 (t °F - 32)
+
+$citySearchInput.oninput = () => {
+    fetch(`${API_URL}?q=${$citySearchInput.value}&appid=${API_KEY}`) // Через интерполяцию с разными переменными грамотней чем вставлять фулл ссылку
+        .then(response => response.json())
+        .then(data => {
+            $cityName.innerHTML = data.name || 'City is not defined!';
+            $cityTemp.innerHTML = data.main?.temp ? Math.round(data.main?.temp - 273) + '℃' : '(☞ﾟヮﾟ)☞'  /* + '&deg;' спецсимвол*/
+            // console.log(data.name, data.main.temp)
+        })
+};
+
+// optional chaining - опциональная цепочка - ?.
+
+const address = {
+    id: 123,
+    // location: {
+    //     street: 'Ibraimova',
+    //     number: 103
+    // }
+}
+
+console.log(address.location?.street); // выдаст undefined а не ошибку - это лучше
