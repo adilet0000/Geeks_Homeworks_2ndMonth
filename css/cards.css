@@ -22,8 +22,47 @@ h4 {
 }
 
 .person_block {
-    border: 1px solid;
-    padding: 10px;
-    width: 250px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 2px solid #cfcfcf;
+    padding: 25px;
+    width: 450px;
+    height: 600px;
     border-radius: 10px;
+}
+
+.cardImage {
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 35%;
+}
+
+.cardImage img {
+    width: 250px;
+}
+
+.cardTitle {
+    position: absolute;
+    top: 2%;
+}
+
+.cardTitle h2{
+    font-size: 28px;
+}
+
+.cardDescription {
+    width: 390px;
+    height: 350px;
+    position: absolute;
+    top: 65%;
+}
+
+.cardDescription p {
+    font-size: 20px;
 }

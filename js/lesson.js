@@ -142,28 +142,44 @@ converter($usdInput, $somInput);
 const rates = {};
 
 
-const token = "9fAIn2lklRcQOOUl8wBLrQ6NVFYbMyWAlhTh8Uqb868ed5c1"
+const token = "TGA3wzZp30LRjY2OYiuQy4NEYfl1754McUBCQ04E4b513c72";
 
 async function getCurrencies() {
-    const response = await fetch('https://data.fx.kg/api/v1/central', {
-        headers: {
-            'Authorization': 'Bearer ' + token
+    try {
+        const response = await fetch('https://data.fx.kg/api/v1/central', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('No response'); // для проверки, успешен ли запрос, если нет, выбрасывается ошибка
         }
-    });
-    const data = await response.json();
-    const result = await data;
 
-    rates.USD = result.usd;
-    rates.EUR = result.eur;
-    rates.GBP = result.gbp;
-    rates.RUB = result.rub;
-    rates.KZT = result.kzt;
-    rates.SOM = 1;
+        const data = await response.json();
 
+        rates.USD = data.usd;
+        rates.EUR = data.eur;
+        rates.GBP = data.gbp;
+        rates.RUB = data.rub;
+        rates.KZT = data.kzt;
+        rates.SOM = 1;
+
+    } catch (error) {
+        rates.USD = "87.3231";
+        rates.EUR = "95.1036";
+        rates.GBP = "110.8733";
+        rates.RUB = "1.0323";
+        rates.KZT = "0.1940";
+        rates.SOM = "1";
+
+        console.error('Слишком много раз использовал API за месяц(макс. 1000 запросов):', error);
+    }
     return rates;
-};
+}
 
-/*
+
+
 getCurrencies().then(() => {
     function convertCurrency(inputElement, value) {
         const currency = inputElement.getAttribute('id').toUpperCase();
@@ -183,7 +199,7 @@ getCurrencies().then(() => {
             const targetCurrency = input.getAttribute('id').toUpperCase();
 
             if (targetCurrency !== currency) {
-                input.value = (somValue / rates[targetCurrency]).toFixed(3);
+                input.value = (somValue / rates[targetCurrency]).toFixed(2);
             };
         });
     };
@@ -200,8 +216,9 @@ getCurrencies().then(() => {
             };
         });
     });
-// });
-*/
+});
+
+
 // getCurrencies().then((data) => {
 //     console.log('Данные курсов валют:', data);
 //     console.log('Объект rates:', rates);
@@ -210,54 +227,62 @@ getCurrencies().then(() => {
 
 
 // CARD-SWITCHER
-// const $cardBlock = document.querySelector('.card');
-// const $btn_next = document.querySelector('#btn-next');
-// const $btn_prev = document.querySelector('#btn-prev');
-// let cardId = 1;
+const $cardBlock = document.querySelector('.card');
+const $btn_next = document.querySelector('#btn-next');
+const $btn_prev = document.querySelector('#btn-prev');
+let cardId = 1;
 
-// const getInfo = () => {
-//     fetch(`https://jsonplaceholder.typicode.com/todos/${cardId}`)
-//         .then(response => response.json())
-//         .then(data => {
-//             $cardBlock.innerHTML = `
-//             <p>${data.title}</p>
-//             <p style="color: ${data.completed ? 'green' : 'red'}">${data.completed}</p>
-//             <span>${data.id}</span>
-//             `;
-//         });
-// };
+const getInfo = async () => {
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${cardId}`);
+        const data = await response.json();
+        $cardBlock.innerHTML = `
+        <p>${data.title}</p>
+        <p style="color: ${data.completed ? 'green' : 'red'}">${data.completed}</p>
+        <span>${data.id}</span>
+        `;
+    } catch (error) {
+        console.log(error);
+    };
+};
 
-// getInfo();
+getInfo();
 
 
-// $btn_next.onclick = () => {
-//     // cardId = (cardId >= 1 && cardId < 200) ? cardId + 1 : 1;
-//     if (cardId >= 1 && cardId < 200) {
-//         cardId++;
-//     } else if (cardId >= 200) {
-//         cardId = 1;
-//     };
+$btn_next.onclick = () => {
+    // cardId = (cardId >= 1 && cardId < 200) ? cardId + 1 : 1;
+    if (cardId >= 1 && cardId < 200) {
+        cardId++;
+    } else if (cardId >= 200) {
+        cardId = 1;
+    };
 
-//     getInfo();
-// };
+    getInfo();
+};
 
-// $btn_prev.onclick = () => {
-//     // cardId = (cardId > 1 && cardId <= 200) ? cardId - 1 : 200;
-//     if (cardId > 1 && cardId <= 200) {
-//         cardId--;
-//     } else if (cardId <= 1) {
-//         cardId = 200;
-//     };
+$btn_prev.onclick = () => {
+    // cardId = (cardId > 1 && cardId <= 200) ? cardId - 1 : 200;
+    if (cardId > 1 && cardId <= 200) {
+        cardId--;
+    } else if (cardId <= 1) {
+        cardId = 200;
+    };
 
-//     getInfo();
-// };
+    getInfo();
+};
 
 
 // HW_PART_2 Так же сделать отдельный fetch запрос на эту ссылку: 'https://jsonplaceholder.typicode.com/posts' и отобразить данные просто в консоли
-fetch('https://jsonplaceholder.typicode.com/posts')
-    .then(response => response.json())
-    .then(data => console.log(data));
-
+const smthFunc = async () => {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.log(error);
+    };
+};
+smthFunc();
 
 // WEATHER
 const $citySearchInput = document.querySelector('.cityName');
@@ -272,18 +297,23 @@ const API_URL = 'http://api.openweathermap.org/data/2.5/weather';
 // https://www.google.com/search query parametr-->(?q=) js&oq=js&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORiABDIGCAEQIxgnMgYIAhAjGCcyDAgDEAAYQxiABBiKBTIMCAQQABhDGIAEGIoFMgYIBRBFGDwyBggGEEUYPDIGCAcQRRg80gEHOTg3ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
 // t °С = 5/9 (t °F - 32)
 
-$citySearchInput.oninput = () => {
-    fetch(`${API_URL}?q=${$citySearchInput.value}&appid=${API_KEY}`) // Через интерполяцию с разными переменными грамотней чем вставлять фулл ссылку
-        .then(response => response.json())
-        .then(data => {
-            $cityName.innerHTML = data.name || 'City is not defined!';
-            $cityTemp.innerHTML = data.main?.temp ? Math.round(data.main?.temp - 273) + '℃' : '(☞ﾟヮﾟ)☞'  /* + '&deg;' спецсимвол*/
-            // console.log(data.name, data.main.temp)
-        })
+$citySearchInput.oninput = async () => {
+    try {
+        const response = await fetch(`${API_URL}?q=${$citySearchInput.value}&appid=${API_KEY}`) // Через интерполяцию с разными переменными грамотней чем вставлять фулл ссылку
+        const data = await response.json();
+        $cityName.innerHTML = data.name || 'City is not defined!';
+        $cityTemp.innerHTML = data.main?.temp ? Math.round(data.main?.temp - 273) + '℃' : '(☞ﾟヮﾟ)☞'  /* + '&deg;' спецсимвол*/
+    } catch (error) {
+        console.log(error);
+    };
 };
 
-// optional chaining - опциональная цепочка - ?.
 
+
+
+
+// optional chaining - опциональная цепочка - ?.
+/*
 const address = {
     id: 123,
     // location: {
@@ -293,3 +323,4 @@ const address = {
 }
 
 console.log(address.location?.street); // выдаст undefined а не ошибку - это лучше
+*/
